@@ -29,4 +29,30 @@ namespace varint
 
 		return value;
 	}
+
+	void writeVarInt(int32_t value, char* destination, int32_t* varIntSize)
+	{
+		uint32_t val = static_cast<uint32_t>(value);
+
+		int32_t position = 0;
+
+		while (true)
+		{
+			if ((val & ~SEGMENT_BITS) == 0)
+			{
+				uint8_t byte = static_cast<uint8_t>(val);
+				*(destination + position) = byte;
+				position++;
+				break;
+			}
+
+			uint8_t byte = static_cast<uint8_t>((val & SEGMENT_BITS) | CONTINUE_BIT);
+			*(destination + position) = byte;
+
+			val >>= 7;
+			position++;
+		}
+
+		*varIntSize = position;
+	}
 }
