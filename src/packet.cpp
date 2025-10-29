@@ -48,6 +48,13 @@ void Packet::writeString(const std::string& value)
 	writeData(value.data(), value.length());
 }
 
+void Packet::writeUShort(uint16_t value)
+{
+	value = endian::nativeToBigEndian(value);
+
+	writeData(reinterpret_cast<char*>(&value), sizeof(uint16_t));
+}
+
 char Packet::readByte()
 {
 	char value = 0;
@@ -62,6 +69,8 @@ int32_t Packet::readInt()
 	int32_t value;
 
 	readData(reinterpret_cast<char*>(&value), sizeof(int32_t));
+
+	value = endian::bigEndianToNative(value);
 
 	return value;
 }
@@ -80,8 +89,19 @@ std::string Packet::readString()
 {
 	int32_t length = readVarInt();
 
-	std::string value = std::string('@', length);
+	std::string value = std::string(length, '@');
 	readData(value.data(), length);
+
+	return value;
+}
+
+uint16_t Packet::readUShort()
+{
+	uint16_t value;
+
+	readData(reinterpret_cast<char*>(&value), sizeof(uint16_t));
+
+	value = endian::bigEndianToNative(value);
 
 	return value;
 }

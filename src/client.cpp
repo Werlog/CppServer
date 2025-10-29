@@ -1,10 +1,12 @@
 #include "client.h"
+#include "client.h"
 #include <iostream>
 
 Client::Client(asio::io_context& serverContext, asio::ip::tcp::socket socket, uint32_t clientId)
 	: serverContext(serverContext), socket(std::move(socket)), packetReader(*this)
 {
 	this->clientId = clientId;
+	this->state = ConnectionState::HANDSHAKING;
 	beginReadData();
 }
 
@@ -21,6 +23,11 @@ void Client::setReceivePacketCallback(const std::function<void(Message)>& callba
 void Client::setDisconnectCallback(const std::function<void(uint32_t)>& callback)
 {
 	this->disconnectCallback = callback;
+}
+
+void Client::setConnectionState(ConnectionState newState)
+{
+	this->state = newState;
 }
 
 void Client::onPacketRead(std::unique_ptr<Packet> packet)
@@ -45,6 +52,11 @@ uint32_t Client::getClientId() const
 	return clientId;
 }
 
+ConnectionState Client::getConnectionState() const
+{
+	return state;
+}
+
 void Client::beginReadData()
 {
 	socket.async_receive(asio::buffer(readBuffer), [this](std::error_code ec, size_t bytesTransferred)
@@ -63,4 +75,3 @@ void Client::beginReadData()
 		beginReadData();
 	});
 }
-

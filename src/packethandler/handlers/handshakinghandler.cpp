@@ -1,0 +1,30 @@
+#include "packethandler/handlers/handshakinghandler.h"
+#include <iostream>
+#include "server.h"
+
+HandshakingHandler::HandshakingHandler(Server& server)
+	: PacketHandler(server)
+{
+	registerHandlerFunctions();
+}
+
+void HandshakingHandler::registerHandlerFunctions()
+{
+	handlerFunctions.insert({ 0, std::bind(&HandshakingHandler::handshakeHandler, this, std::placeholders::_1) });
+}
+
+void HandshakingHandler::handshakeHandler(Message message)
+{
+	std::unique_ptr<Packet> packet = std::move(message.packet);
+
+	int32_t protocolVersion = packet->readVarInt();
+	std::string address = packet->readString();
+	uint16_t port = packet->readUShort();
+	int32_t nextState = packet->readVarInt();
+
+	std::cout << "Handshake packet: protocol: " << protocolVersion << " address: " << address << " port: " << port << " next state: " << nextState << std::endl;
+
+	std::shared_ptr<Client> client = server.getClientById(message.fromClientId);
+	if (client != nullptr)
+		client->setConnectionState((ConnectionState)nextState);
+}

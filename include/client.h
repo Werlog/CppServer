@@ -20,15 +20,18 @@ public:
 	Client(asio::io_context& serverContext, asio::ip::tcp::socket socket, uint32_t clientId);
 	~Client();
 
-	void setReceivePacketCallback(const std::function<void(Message)>& callback);
-	void setDisconnectCallback(const std::function<void(uint32_t)>& callback);
+	void disconnect();
 
 	void onPacketRead(std::unique_ptr<Packet> packet);
 
-	void disconnect();
+	void setReceivePacketCallback(const std::function<void(Message)>& callback);
+	void setDisconnectCallback(const std::function<void(uint32_t)>& callback);
+	void setConnectionState(ConnectionState newState);
 
 	uint32_t getClientId() const;
+	ConnectionState getConnectionState() const;
 private:
+	ConnectionState state;
 	uint32_t clientId;
 
 	asio::ip::tcp::socket socket;

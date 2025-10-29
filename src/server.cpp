@@ -5,6 +5,8 @@ Server::Server(uint32_t serverPort)
 	: acceptor(context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), serverPort))
 {
 	this->currentClientId = 0;
+
+	registerPacketHandlers();
 }
 
 void Server::update(uint32_t maxPackets)
@@ -14,7 +16,17 @@ void Server::update(uint32_t maxPackets)
 	{
 		Message message = messageQueue.pop_front();
 
-		std::cout << "Processing packet from client " << message.fromClientId << " with ID " << message.packet->getPacketId() << std::endl;
+		std::shared_ptr<Client> client = getClientById(message.fromClientId);
+		if (client != nullptr)
+		{
+			auto it = packetHandlers.find(client->getConnectionState());
+			if (it == packetHandlers.end())
+			{
+				std::cout << "No packet handler exists for connection state \"" << client->getConnectionState() << "\"" << std::endl;
+				continue;
+			}
+			it->second->handleMessage(std::move(message));
+		}
 	}
 }
 
@@ -56,6 +68,20 @@ void Server::onClientDisconnected(uint32_t clientId)
 	std::cout << clientId << " has disconnected." << std::endl;
 
 	clients.erase(it);
+}
+
+std::shared_ptr<Client> Server::getClientById(uint32_t clientId)
+{
+	auto it = clients.find(clientId);
+	if (it == clients.end())
+		return nullptr;
+
+	return it->second;
+}
+
+void Server::registerPacketHandlers()
+{
+	packetHandlers.insert({ ConnectionState::HANDSHAKING, std::make_unique<HandshakingHandler>(*this) });
 }
 
 void Server::beginAcceptClient()

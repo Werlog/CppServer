@@ -25,4 +25,15 @@ namespace endian
 
 		return value;
 	}
+
+	template<typename T>
+	T bigEndianToNative(T value)
+	{
+		static_assert(std::is_integral<T>::value, "bigEndianToNative only supports integral types");
+
+		if (isMachineLittleEndian())
+			return swapEndianness(value);
+
+		return value;
+	}
 }

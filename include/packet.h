@@ -15,11 +15,13 @@ public:
 	void writeInt(int32_t value);
 	void writeVarInt(int32_t value);
 	void writeString(const std::string& value);
+	void writeUShort(uint16_t value);
 
 	char readByte();
 	int32_t readInt();
 	int32_t readVarInt();
 	std::string readString();
+	uint16_t readUShort();
 
 	uint32_t getPacketLength() const;
 	uint32_t getPacketId() const;
