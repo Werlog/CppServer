@@ -2,28 +2,27 @@
 
 #include <stdint.h>
 #include <vector>
-
-struct PackerHeader
-{
-	uint32_t packetLength;
-	uint32_t packetId;
-};
+#include <string>
 
 class Packet
 {
 public:
 
 	Packet(uint32_t packetId);
+	Packet(const char* data, size_t size);
 
 	void writeByte(char value);
 	void writeInt(int32_t value);
 	void writeVarInt(int32_t value);
+	void writeString(const std::string& value);
 
 	char readByte();
 	int32_t readInt();
 	int32_t readVarInt();
+	std::string readString();
 
-	uint32_t getPacketLength();
+	uint32_t getPacketLength() const;
+	uint32_t getPacketId() const;
 private:
 	std::vector<char> buffer;
 

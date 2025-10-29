@@ -4,6 +4,7 @@ namespace varint
 {
 	constexpr int SEGMENT_BITS = 0x7f;
 	constexpr int CONTINUE_BIT = 0x80;
+	constexpr int MAX_VARINT_LENGTH = 5;
 
 	int32_t readVarInt(const char* source, uint32_t* varIntSize)
 	{
@@ -13,7 +14,7 @@ namespace varint
 
 		while (true)
 		{
-			currentByte = *(source + position);
+			currentByte = source[position];
 
 			value |= (currentByte & SEGMENT_BITS) << (position * 7);
 
@@ -21,11 +22,11 @@ namespace varint
 
 			position++;
 
-			if (position >= 5) break;
+			if (position >= MAX_VARINT_LENGTH) break;
 		}
 
 		if (varIntSize != nullptr)
-			*varIntSize = position;
+			*varIntSize = position + 1;
 
 		return value;
 	}
@@ -54,5 +55,21 @@ namespace varint
 		}
 
 		*varIntSize = position;
+	}
+
+	bool isCompleteVarInt(const char* source, int32_t size)
+	{
+		for (size_t i = 0; i < size; i++)
+		{
+			char byte = source[i];
+
+			if ((byte & CONTINUE_BIT) == 0)
+				return true;
+
+			if (i + 1 >= MAX_VARINT_LENGTH)
+				return true;
+		}
+
+		return false;
 	}
 }

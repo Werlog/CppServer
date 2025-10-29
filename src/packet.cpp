@@ -11,6 +11,13 @@ Packet::Packet(uint32_t packetId)
 	this->readBytes = 0;
 }
 
+Packet::Packet(const char* data, size_t size)
+{
+	writeData(data, size);
+	this->readBytes = 0;
+	this->packetId = readVarInt();
+}
+
 void Packet::writeByte(char value)
 {
 	writeData(&value, sizeof(char));
@@ -32,6 +39,13 @@ void Packet::writeVarInt(int32_t value)
 	std::cout << size << std::endl;
 
 	writeData(varIntBytes, size);
+}
+
+void Packet::writeString(const std::string& value)
+{
+	writeVarInt(value.length());
+
+	writeData(value.data(), value.length());
 }
 
 char Packet::readByte()
@@ -62,9 +76,24 @@ int32_t Packet::readVarInt()
 	return value;
 }
 
-uint32_t Packet::getPacketLength()
+std::string Packet::readString()
+{
+	int32_t length = readVarInt();
+
+	std::string value = std::string('@', length);
+	readData(value.data(), length);
+
+	return value;
+}
+
+uint32_t Packet::getPacketLength() const
 {
 	return (uint32_t)buffer.size();
+}
+
+uint32_t Packet::getPacketId() const
+{
+	return packetId;
 }
 
 void Packet::writeData(const char* data, size_t size)
