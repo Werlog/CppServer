@@ -8,10 +8,10 @@
 
 enum ConnectionState : unsigned char
 {
-	HANDSHAKING,
-	LOGIN,
-	STATUS,
-	PLAY
+	HANDSHAKING = 0,
+	STATUS = 1,
+	LOGIN = 2,
+	PLAY = 3
 };
 
 class Client
@@ -23,6 +23,8 @@ public:
 	void disconnect();
 
 	void onPacketRead(std::unique_ptr<Packet> packet);
+
+	void sendMessage(Message message);
 
 	void setReceivePacketCallback(const std::function<void(Message)>& callback);
 	void setDisconnectCallback(const std::function<void(uint32_t)>& callback);

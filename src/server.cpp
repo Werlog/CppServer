@@ -1,5 +1,6 @@
 #include "server.h"
 #include <iostream>
+#include "packethandler/handlers/statushandler.h"
 
 Server::Server(uint32_t serverPort)
 	: acceptor(context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), serverPort))
@@ -12,17 +13,17 @@ Server::Server(uint32_t serverPort)
 void Server::update(uint32_t maxPackets)
 {
 	uint32_t processed = 0;
-	while (processed < maxPackets && !messageQueue.empty())
+	while (processed < maxPackets && !inMessageQueue.empty())
 	{
-		Message message = messageQueue.pop_front();
+		Message message = inMessageQueue.pop_front();
 
-		std::shared_ptr<Client> client = getClientById(message.fromClientId);
+		std::shared_ptr<Client> client = getClientById(message.clientId);
 		if (client != nullptr)
 		{
 			auto it = packetHandlers.find(client->getConnectionState());
 			if (it == packetHandlers.end())
 			{
-				std::cout << "No packet handler exists for connection state \"" << client->getConnectionState() << "\"" << std::endl;
+				std::cout << "No packet handler exists for connection state \"" << std::to_string(client->getConnectionState()) << "\"" << std::endl;
 				continue;
 			}
 			it->second->handleMessage(std::move(message));
@@ -56,7 +57,12 @@ bool Server::stopServer()
 
 void Server::receiveMessage(Message message)
 {
-	messageQueue.push_back(std::move(message));
+	inMessageQueue.push_back(std::move(message));
+}
+
+void Server::sendMessage(Message message)
+{
+	outMessageQueue.push_back(std::move(message));
 }
 
 void Server::onClientDisconnected(uint32_t clientId)
@@ -82,6 +88,7 @@ std::shared_ptr<Client> Server::getClientById(uint32_t clientId)
 void Server::registerPacketHandlers()
 {
 	packetHandlers.insert({ ConnectionState::HANDSHAKING, std::make_unique<HandshakingHandler>(*this) });
+	packetHandlers.insert({ ConnectionState::STATUS, std::make_unique<StatusHandler>(*this) });
 }
 
 void Server::beginAcceptClient()

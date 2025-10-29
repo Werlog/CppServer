@@ -9,6 +9,8 @@ Packet::Packet(uint32_t packetId)
 {
 	this->packetId = packetId;
 	this->readBytes = 0;
+
+	writeVarInt(packetId);
 }
 
 Packet::Packet(const char* data, size_t size)
@@ -36,7 +38,6 @@ void Packet::writeVarInt(int32_t value)
 	int32_t size = 0;
 
 	varint::writeVarInt(value, varIntBytes, &size);
-	std::cout << size << std::endl;
 
 	writeData(varIntBytes, size);
 }
@@ -53,6 +54,13 @@ void Packet::writeUShort(uint16_t value)
 	value = endian::nativeToBigEndian(value);
 
 	writeData(reinterpret_cast<char*>(&value), sizeof(uint16_t));
+}
+
+void Packet::writeLong(int64_t value)
+{
+	value = endian::nativeToBigEndian(value);
+
+	writeData(reinterpret_cast<char*>(&value), sizeof(int64_t));
 }
 
 char Packet::readByte()
@@ -106,6 +114,17 @@ uint16_t Packet::readUShort()
 	return value;
 }
 
+int64_t Packet::readLong()
+{
+	int64_t value;
+
+	readData(reinterpret_cast<char*>(&value), sizeof(int64_t));
+
+	value = endian::bigEndianToNative(value);
+
+	return value;
+}
+
 uint32_t Packet::getPacketLength() const
 {
 	return (uint32_t)buffer.size();
@@ -114,6 +133,11 @@ uint32_t Packet::getPacketLength() const
 uint32_t Packet::getPacketId() const
 {
 	return packetId;
+}
+
+const char* Packet::getData() const
+{
+	return buffer.data();
 }
 
 void Packet::writeData(const char* data, size_t size)
@@ -126,7 +150,7 @@ void Packet::writeData(const char* data, size_t size)
 
 void Packet::readData(char* destination, size_t size)
 {
-	if (readBytes + size >= buffer.size())
+	if (readBytes + size > buffer.size())
 	{
 		size_t remaining = buffer.size() - readBytes;
 

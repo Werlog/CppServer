@@ -16,15 +16,18 @@ public:
 	void writeVarInt(int32_t value);
 	void writeString(const std::string& value);
 	void writeUShort(uint16_t value);
+	void writeLong(int64_t value);
 
 	char readByte();
 	int32_t readInt();
 	int32_t readVarInt();
 	std::string readString();
 	uint16_t readUShort();
+	int64_t readLong();
 
 	uint32_t getPacketLength() const;
 	uint32_t getPacketId() const;
+	const char* getData() const;
 private:
 	std::vector<char> buffer;
 

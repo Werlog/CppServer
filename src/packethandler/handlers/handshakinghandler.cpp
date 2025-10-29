@@ -22,9 +22,7 @@ void HandshakingHandler::handshakeHandler(Message message)
 	uint16_t port = packet->readUShort();
 	int32_t nextState = packet->readVarInt();
 
-	std::cout << "Handshake packet: protocol: " << protocolVersion << " address: " << address << " port: " << port << " next state: " << nextState << std::endl;
-
-	std::shared_ptr<Client> client = server.getClientById(message.fromClientId);
+	std::shared_ptr<Client> client = server.getClientById(message.clientId);
 	if (client != nullptr)
 		client->setConnectionState((ConnectionState)nextState);
 }

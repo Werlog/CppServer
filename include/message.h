@@ -6,6 +6,6 @@
 
 struct Message
 {
-	uint32_t fromClientId;
+	uint32_t clientId;
 	std::unique_ptr<Packet> packet;
 };
