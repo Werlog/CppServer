@@ -5,7 +5,8 @@
 #include "packet.h"
 #include <stdint.h>
 #include <thread>
-#include "connection.h"
+#include "client.h"
+#include <unordered_map>
 
 class Server
 {
@@ -17,15 +18,17 @@ public:
 	bool startServer();
 	bool stopServer();
 
-	void receivePacket(Packet& packet);
+	void receiveMessage(Message message);
+	void onClientDisconnected(uint32_t clientId);
 private:
-	std::vector<std::shared_ptr<Connection>> connections;
+	std::unordered_map<uint32_t, std::shared_ptr<Client>> clients;
+	tsqueue<Message> messageQueue;
+	uint32_t currentClientId;
 
-	tsqueue<Packet> packetQueue;
 	asio::io_context context;
 	std::thread contextThread;
-
 	asio::ip::tcp::acceptor acceptor;
 
 	void beginAcceptClient();
+	uint32_t getNextClientId();
 };

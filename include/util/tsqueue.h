@@ -11,6 +11,9 @@ public:
 	void push_back(const T& value);
 	void push_front(const T& value);
 
+	void push_back(T&& value);
+	void push_front(T&& value);
+
 	const T& front();
 	const T& back();
 
@@ -36,6 +39,20 @@ inline void tsqueue<T>::push_front(const T& value)
 {
 	std::scoped_lock lock(queueMutex);
 	queue.push_front(value);
+}
+
+template<typename T>
+inline void tsqueue<T>::push_back(T&& value)
+{
+	std::scoped_lock lock(queueMutex);
+	queue.push_back(std::move(value));
+}
+
+template<typename T>
+inline void tsqueue<T>::push_front(T&& value)
+{
+	std::scoped_lock lock(queueMutex);
+	queue.push_front(std::move(value));
 }
 
 template<typename T>

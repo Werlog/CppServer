@@ -1,9 +1,9 @@
 #include "packetreader.h"
-#include "connection.h"
+#include "client.h"
 #include "util/varintutil.h"
 #include <iostream>
 
-PacketReader::PacketReader(Connection& connection)
+PacketReader::PacketReader(Client& connection)
 	: connection(connection)
 {
 
@@ -34,11 +34,9 @@ void PacketReader::readPackets()
 
 		if (receiveBuffer.size() >= packetLength + lengthSize)
 		{
-			Packet packet = Packet(receiveBuffer.data() + lengthSize, packetLength);
+			std::unique_ptr<Packet> packet = std::make_unique<Packet>(receiveBuffer.data() + lengthSize, packetLength);
 
-			std::cout << "Read packet with the ID: " << std::to_string(packet.getPacketId()) << std::endl;
-
-			connection.onPacketRead(packet);
+			connection.onPacketRead(std::move(packet));
 
 			receiveBuffer.erase(receiveBuffer.begin(), receiveBuffer.begin() + packetLength + lengthSize);
 		}

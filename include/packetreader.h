@@ -2,16 +2,16 @@
 
 #include <vector>
 
-class Connection;
+class Client;
 
 class PacketReader
 {
 public:
-	PacketReader(Connection& connection);
+	PacketReader(Client& connection);
 
 	void onReceiveData(const std::array<char, 512>& data, size_t bytesTransferred);
 private:
-	Connection& connection;
+	Client& connection;
 	std::vector<char> receiveBuffer;
 
 	void readPackets();

@@ -4,17 +4,17 @@
 Server::Server(uint32_t serverPort)
 	: acceptor(context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), serverPort))
 {
-
+	this->currentClientId = 0;
 }
 
 void Server::update(uint32_t maxPackets)
 {
 	uint32_t processed = 0;
-	while (processed < maxPackets && !packetQueue.empty())
+	while (processed < maxPackets && !messageQueue.empty())
 	{
-		Packet packet = packetQueue.pop_front();
+		Message message = messageQueue.pop_front();
 
-		std::cout << "Processing packet with ID: " << packet.getPacketId() << std::endl;
+		std::cout << "Processing packet from client " << message.fromClientId << " with ID " << message.packet->getPacketId() << std::endl;
 	}
 }
 
@@ -42,9 +42,20 @@ bool Server::stopServer()
 	return false;
 }
 
-void Server::receivePacket(Packet& packet)
+void Server::receiveMessage(Message message)
 {
-	packetQueue.push_back(std::move(packet));
+	messageQueue.push_back(std::move(message));
+}
+
+void Server::onClientDisconnected(uint32_t clientId)
+{
+	auto it = clients.find(clientId);
+	if (it == clients.end())
+		return;
+
+	std::cout << clientId << " has disconnected." << std::endl;
+
+	clients.erase(it);
 }
 
 void Server::beginAcceptClient()
@@ -53,13 +64,16 @@ void Server::beginAcceptClient()
 	{
 		if (!ec)
 		{
-			std::cout << "Incoming connection from " << socket.remote_endpoint() << "\n";
+			auto idk = socket.remote_endpoint();
 
-			std::shared_ptr<Connection> connection = std::make_shared<Connection>(context, std::move(socket));
+			std::shared_ptr<Client> client = std::make_shared<Client>(context, std::move(socket), getNextClientId());
 
-			connection->setReceivePacketCallback([this](Packet& packet) { receivePacket(packet); });
+			client->setReceivePacketCallback([this](Message message) { receiveMessage(std::move(message)); });
+			client->setDisconnectCallback([this](uint32_t clientId) { onClientDisconnected(clientId); });
 
-			connections.push_back(connection);
+			clients.insert({ client->getClientId(), client });
+
+			std::cout << idk << " has connected and has been assigned to client id " << client->getClientId() << std::endl;
 		}
 		else
 		{
@@ -68,4 +82,9 @@ void Server::beginAcceptClient()
 
 		beginAcceptClient();
 	});
+}
+
+uint32_t Server::getNextClientId()
+{
+	return ++currentClientId;
 }
