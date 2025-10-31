@@ -7,6 +7,8 @@
 
 class Server;
 
+#define PACKET_HANDLER_BIND(method) std::bind((method), this, std::placeholders::_1)
+
 class PacketHandler
 {
 public:

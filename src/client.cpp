@@ -14,7 +14,7 @@ Client::Client(asio::io_context& serverContext, asio::ip::tcp::socket socket, ui
 
 Client::~Client()
 {
-	socket.close();
+	disconnect();
 }
 
 void Client::setReceivePacketCallback(const std::function<void(Message)>& callback)

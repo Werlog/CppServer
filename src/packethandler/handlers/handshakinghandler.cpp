@@ -10,7 +10,7 @@ HandshakingHandler::HandshakingHandler(Server& server)
 
 void HandshakingHandler::registerHandlerFunctions()
 {
-	handlerFunctions.insert({ 0, std::bind(&HandshakingHandler::handshakeHandler, this, std::placeholders::_1) });
+	handlerFunctions.insert({ 0, PACKET_HANDLER_BIND(&HandshakingHandler::handshakeHandler) });
 }
 
 void HandshakingHandler::handshakeHandler(Message message)

@@ -10,8 +10,8 @@ StatusHandler::StatusHandler(Server& server)
 
 void StatusHandler::registerHandlerFunctions()
 {
-	handlerFunctions.insert({ 0, std::bind(&StatusHandler::requestHandler, this, std::placeholders::_1) });
-	handlerFunctions.insert({ 1, std::bind(&StatusHandler::pingHandler, this, std::placeholders::_1) });
+	handlerFunctions.insert({ 0, PACKET_HANDLER_BIND(&StatusHandler::requestHandler) });
+	handlerFunctions.insert({ 1, PACKET_HANDLER_BIND(&StatusHandler::pingHandler) });
 }
 
 void StatusHandler::requestHandler(Message message)

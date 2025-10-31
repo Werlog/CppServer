@@ -1,6 +1,7 @@
 #include "server.h"
 #include <iostream>
 #include "packethandler/handlers/statushandler.h"
+#include "packethandler/handlers/loginhandler.h"
 
 Server::Server(uint32_t serverPort)
 	: acceptor(context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), serverPort))
@@ -84,6 +85,7 @@ void Server::registerPacketHandlers()
 {
 	packetHandlers.insert({ ConnectionState::HANDSHAKING, std::make_unique<HandshakingHandler>(*this) });
 	packetHandlers.insert({ ConnectionState::STATUS, std::make_unique<StatusHandler>(*this) });
+	packetHandlers.insert({ ConnectionState::LOGIN, std::make_unique<LoginHandler>(*this) });
 }
 
 void Server::beginAcceptClient()
