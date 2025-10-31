@@ -23,10 +23,10 @@ void StatusHandler::requestHandler(Message message)
 	std::unique_ptr<Packet> responsePacket = std::make_unique<Packet>(0);
 	responsePacket->writeString(jesonne);
 
-	Message response = Message{ message.clientId, std::move(responsePacket) };
 	std::shared_ptr<Client> client = server.getClientById(message.clientId);
+
 	if (client != nullptr)
-		client->sendMessage(std::move(response));
+		client->sendPacket(std::move(responsePacket));
 }
 
 void StatusHandler::pingHandler(Message message)
@@ -38,8 +38,8 @@ void StatusHandler::pingHandler(Message message)
 	std::unique_ptr<Packet> responsePacket = std::make_unique<Packet>(1);
 	responsePacket->writeLong(val);
 
-	Message response = Message{ message.clientId, std::move(responsePacket) };
+
 	std::shared_ptr<Client> client = server.getClientById(message.clientId);
 	if (client != nullptr)
-		client->sendMessage(std::move(response));
+		client->sendPacket(std::move(responsePacket));
 }

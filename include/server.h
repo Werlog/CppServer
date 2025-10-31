@@ -20,7 +20,6 @@ public:
 	bool stopServer();
 
 	void receiveMessage(Message message);
-	void sendMessage(Message message);
 	void onClientDisconnected(uint32_t clientId);
 
 	std::shared_ptr<Client> getClientById(uint32_t clientId);
@@ -28,7 +27,6 @@ private:
 	std::unordered_map<uint32_t, std::shared_ptr<Client>> clients;
 	std::unordered_map<ConnectionState, std::unique_ptr<PacketHandler>> packetHandlers;
 	tsqueue<Message> inMessageQueue;
-	tsqueue<Message> outMessageQueue;
 	uint32_t currentClientId;
 
 	asio::io_context context;

@@ -60,11 +60,6 @@ void Server::receiveMessage(Message message)
 	inMessageQueue.push_back(std::move(message));
 }
 
-void Server::sendMessage(Message message)
-{
-	outMessageQueue.push_back(std::move(message));
-}
-
 void Server::onClientDisconnected(uint32_t clientId)
 {
 	auto it = clients.find(clientId);

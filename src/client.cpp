@@ -8,6 +8,7 @@ Client::Client(asio::io_context& serverContext, asio::ip::tcp::socket socket, ui
 {
 	this->clientId = clientId;
 	this->state = ConnectionState::HANDSHAKING;
+	this->sendInProgress = false;
 	beginReadData();
 }
 
@@ -40,18 +41,14 @@ void Client::onPacketRead(std::unique_ptr<Packet> packet)
 	}
 }
 
-void Client::sendMessage(Message message)
+void Client::sendPacket(std::unique_ptr<Packet> packet)
 {
-	int32_t packetLength = message.packet->getPacketLength();
-	std::vector<char> packetData = std::vector<char>(packetLength);
-
-	int32_t varintSize = 0;
-	varint::writeVarInt(packetLength, packetData.data(), &varintSize);
-	packetData.resize(packetData.size() + varintSize);
-
-	std::memcpy(packetData.data() + varintSize, message.packet->getData(), packetLength);
-
-	socket.send(asio::buffer(packetData));
+	asio::post(socket.get_executor(), [this, p = std::move(packet)]() mutable
+	{
+		sendQueue.emplace_back(std::move(p));
+		if (!sendInProgress)
+			doSend();
+	});
 }
 
 void Client::disconnect()
@@ -88,5 +85,41 @@ void Client::beginReadData()
 		}
 
 		beginReadData();
+	});
+}
+
+void Client::doSend()
+{
+	sendInProgress = true;
+
+	std::unique_ptr<Packet> packet = std::move(sendQueue.front());
+	sendQueue.pop_front();
+
+	int32_t packetLength = packet->getPacketLength();
+	sendData = std::vector<char>(packetLength);
+
+	int32_t varintSize = 0;
+	varint::writeVarInt(packetLength, sendData.data(), &varintSize);
+	sendData.resize(sendData.size() + varintSize);
+
+	std::memcpy(sendData.data() + varintSize, packet->getData(), packetLength);
+
+	asio::async_write(socket, asio::buffer(sendData), [this](std::error_code ec, size_t bytesTransferred)
+	{
+		if (!ec)
+		{
+			if (!sendQueue.empty())
+			{
+				doSend();
+			}
+			else
+			{
+				sendInProgress = false;
+			}
+		}
+		else
+		{
+			std::cerr << "Failed to transfer packet: " << ec.message() << std::endl;
+		}
 	});
 }

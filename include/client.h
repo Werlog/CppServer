@@ -2,6 +2,7 @@
 
 #include <asio.hpp>
 #include <functional>
+#include <deque>
 #include "packet.h"
 #include "packetreader.h"
 #include "message.h"
@@ -24,7 +25,7 @@ public:
 
 	void onPacketRead(std::unique_ptr<Packet> packet);
 
-	void sendMessage(Message message);
+	void sendPacket(std::unique_ptr<Packet> packet);
 
 	void setReceivePacketCallback(const std::function<void(Message)>& callback);
 	void setDisconnectCallback(const std::function<void(uint32_t)>& callback);
@@ -39,6 +40,10 @@ private:
 	asio::ip::tcp::socket socket;
 	asio::io_context& serverContext;
 
+	std::deque<std::unique_ptr<Packet>> sendQueue;
+	std::vector<char> sendData;
+	bool sendInProgress;
+
 	std::function<void(Message)> receiveCallback;
 	std::function<void(uint32_t)> disconnectCallback;
 
@@ -46,4 +51,5 @@ private:
 	std::array<char, 512> readBuffer;
 
 	void beginReadData();
+	void doSend();
 };
