@@ -1,6 +1,7 @@
 #include "client.h"
 #include <iostream>
 #include "util/varintutil.h"
+#include "logger.h"
 
 
 Client::Client(asio::io_context& serverContext, asio::ip::tcp::socket socket, uint32_t clientId)
@@ -79,7 +80,7 @@ void Client::beginReadData()
 		}
 		else
 		{
-			std::cout << "Failed to read from socket: " << ec.message() << std::endl;
+			DEBUG_LOG("Failed to read from socket: " + ec.message());
 			disconnect();
 			return;
 		}

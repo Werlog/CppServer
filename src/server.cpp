@@ -2,6 +2,7 @@
 #include <iostream>
 #include "packethandler/handlers/statushandler.h"
 #include "packethandler/handlers/loginhandler.h"
+#include "logger.h"
 
 Server::Server(uint32_t serverPort)
 	: acceptor(context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), serverPort))
@@ -24,7 +25,7 @@ void Server::update(uint32_t maxPackets)
 			auto it = packetHandlers.find(client->getConnectionState());
 			if (it == packetHandlers.end())
 			{
-				std::cout << "No packet handler exists for connection state \"" << std::to_string(client->getConnectionState()) << "\"" << std::endl;
+				DEBUG_LOG("No packet handler exists for connection state " + std::to_string(client->getConnectionState()));
 				continue;
 			}
 			it->second->handleMessage(std::move(message));
@@ -40,11 +41,11 @@ bool Server::startServer()
 
 		contextThread = std::thread([this]() { context.run(); });
 
-		std::cout << "Server started" << std::endl;
+		logger::logInfo("Server started.");
 	}
 	catch (std::exception& ex)
 	{
-		std::cerr << "Could not start the server: " << ex.what() << "\n";
+		logger::logError("Failed to start the server" + std::string(ex.what()));
 		return false;
 	}
 
@@ -67,7 +68,7 @@ void Server::onClientDisconnected(uint32_t clientId)
 	if (it == clients.end())
 		return;
 
-	std::cout << clientId << " has disconnected." << std::endl;
+	DEBUG_LOG("Client " + std::to_string(clientId) + " has disconnected");
 
 	clients.erase(it);
 }
@@ -102,12 +103,11 @@ void Server::beginAcceptClient()
 			client->setDisconnectCallback([this](uint32_t clientId) { onClientDisconnected(clientId); });
 
 			clients.insert({ client->getClientId(), client });
-
-			std::cout << idk << " has connected and has been assigned to client id " << client->getClientId() << std::endl;
+			DEBUG_LOG(idk.address().to_string() + " has connected and has been assigned to client id " + std::to_string(client->getClientId()));
 		}
 		else
 		{
-			std::cerr << "Could not accept client: " << ec.message() << std::endl;
+			logger::logWarning("Could not accept client: " + ec.message());
 		}
 
 		beginAcceptClient();
