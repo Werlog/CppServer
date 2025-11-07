@@ -1,0 +1,2 @@
+# C++ Minecraft Server
+This is my attempt at writing my own Minecraft server implementation in C++. It currently does not do much besides responding to the Minecraft 'ping' packet. I am also using the [asio](https://think-async.com/Asio/) library for networking.
