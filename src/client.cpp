@@ -54,10 +54,13 @@ void Client::sendPacket(std::unique_ptr<Packet> packet)
 
 void Client::disconnect()
 {
-	socket.close();
+	if (socket.is_open())
+	{
+		socket.close();
 
-	if (disconnectCallback)
-		disconnectCallback(clientId);
+		if (disconnectCallback)
+			disconnectCallback(clientId);
+	}
 }
 
 uint32_t Client::getClientId() const

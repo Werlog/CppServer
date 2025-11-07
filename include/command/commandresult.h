@@ -11,6 +11,7 @@ struct CommandResult
 	{
 		return CommandResult{ true, "Success" };
 	}
+
 	static CommandResult failure(const std::string& message)
 	{
 		return CommandResult{ false, message };

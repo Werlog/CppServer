@@ -14,12 +14,12 @@ void CommandBus::registerHandler(CommandType commandType, std::unique_ptr<Comman
 	handlers.insert({ commandType, std::move(handler) });
 }
 
-CommandResult CommandBus::execute(const Command& command)
+CommandResult CommandBus::execute(const Command& command, Application& application)
 {
 	auto it = handlers.find(command.getCommandType());
 
 	if (it == handlers.end())
 		return CommandResult::failure("No command handler found");
 
-	return it->second->handle(command);
+	return it->second->handle(command, application);
 }

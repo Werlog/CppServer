@@ -4,12 +4,12 @@
 #include "packethandler/handlers/loginhandler.h"
 #include "logger.h"
 
-Server::Server(uint32_t serverPort)
+Server::Server(uint32_t serverPort, Application& application)
 	: acceptor(context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), serverPort))
 {
 	this->currentClientId = 0;
 
-	registerPacketHandlers();
+	registerPacketHandlers(application);
 }
 
 void Server::update(uint32_t maxPackets)
@@ -64,13 +64,22 @@ void Server::receiveMessage(Message message)
 
 void Server::onClientDisconnected(uint32_t clientId)
 {
+	//DEBUG_LOG("Removing client " + std::to_string(clientId));
 	auto it = clients.find(clientId);
 	if (it == clients.end())
 		return;
 
 	DEBUG_LOG("Client " + std::to_string(clientId) + " has disconnected");
-
 	clients.erase(it);
+}
+
+void Server::disconnectClient(uint32_t clientId)
+{
+	auto it = clients.find(clientId);
+	if (it == clients.end())
+		return;
+
+	it->second->disconnect();
 }
 
 std::shared_ptr<Client> Server::getClientById(uint32_t clientId)
@@ -82,11 +91,11 @@ std::shared_ptr<Client> Server::getClientById(uint32_t clientId)
 	return it->second;
 }
 
-void Server::registerPacketHandlers()
+void Server::registerPacketHandlers(Application& application)
 {
-	packetHandlers.insert({ ConnectionState::HANDSHAKING, std::make_unique<HandshakingHandler>(*this) });
-	packetHandlers.insert({ ConnectionState::STATUS, std::make_unique<StatusHandler>(*this) });
-	packetHandlers.insert({ ConnectionState::LOGIN, std::make_unique<LoginHandler>(*this) });
+	packetHandlers.insert({ ConnectionState::HANDSHAKING, std::make_unique<HandshakingHandler>(*this, application) });
+	packetHandlers.insert({ ConnectionState::STATUS, std::make_unique<StatusHandler>(*this, application) });
+	packetHandlers.insert({ ConnectionState::LOGIN, std::make_unique<LoginHandler>(*this, application) });
 }
 
 void Server::beginAcceptClient()

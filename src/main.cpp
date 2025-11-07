@@ -7,7 +7,7 @@
 int main()
 {
 	Application application;
-	application.mainLoop();
+	application.run();
 
 	return 0;
 }

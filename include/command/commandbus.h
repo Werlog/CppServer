@@ -13,7 +13,7 @@ public:
 
 	void registerHandler(CommandType commandType, std::unique_ptr<CommandHandler> handler);
 
-	CommandResult execute(const Command& command);
+	CommandResult execute(const Command& command, Application& application);
 private:
 	std::unordered_map<CommandType, std::unique_ptr<CommandHandler>> handlers;
 };

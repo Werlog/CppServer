@@ -5,7 +5,7 @@
 class HandshakingHandler : public PacketHandler
 {
 public:
-	HandshakingHandler(Server& server);
+	HandshakingHandler(Server& server, Application& application);
 
 	virtual void registerHandlerFunctions() override;
 private:

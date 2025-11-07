@@ -7,6 +7,7 @@ option(PRODUCTION_BUILD "Make this a production build" OFF)
 project(MinecraftServer)
 
 add_subdirectory(thirdparty/asio)
+add_subdirectory(thirdparty/glm)
 
 file(GLOB_RECURSE SERVER_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
@@ -22,4 +23,4 @@ target_sources("${CMAKE_PROJECT_NAME}" PRIVATE ${SERVER_SOURCES})
 
 target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
-target_link_libraries("${CMAKE_PROJECT_NAME}" PRIVATE asio)
+target_link_libraries("${CMAKE_PROJECT_NAME}" PRIVATE asio glm)

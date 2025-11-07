@@ -1,8 +1,8 @@
 #include "packethandler/packethandler.h"
 #include "server.h"
 
-PacketHandler::PacketHandler(Server& server)
-	: server(server)
+PacketHandler::PacketHandler(Server& server, Application& application)
+	: server(server), application(application)
 {
 
 }

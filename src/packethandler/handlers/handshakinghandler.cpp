@@ -2,8 +2,8 @@
 #include <iostream>
 #include "server.h"
 
-HandshakingHandler::HandshakingHandler(Server& server)
-	: PacketHandler(server)
+HandshakingHandler::HandshakingHandler(Server& server, Application& application)
+	: PacketHandler(server, application)
 {
 	registerHandlerFunctions();
 }

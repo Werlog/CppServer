@@ -9,10 +9,12 @@
 #include <unordered_map>
 #include "packethandler/handlers/handshakinghandler.h"
 
+class Application;
+
 class Server
 {
 public:
-	Server(uint32_t serverPort);
+	Server(uint32_t serverPort, Application& application);
 
 	void update(uint32_t maxPackets = -1);
 
@@ -21,6 +23,8 @@ public:
 
 	void receiveMessage(Message message);
 	void onClientDisconnected(uint32_t clientId);
+
+	void disconnectClient(uint32_t clientId);
 
 	std::shared_ptr<Client> getClientById(uint32_t clientId);
 private:
@@ -33,7 +37,7 @@ private:
 	std::thread contextThread;
 	asio::ip::tcp::acceptor acceptor;
 
-	void registerPacketHandlers();
+	void registerPacketHandlers(Application& application);
 
 	void beginAcceptClient();
 	uint32_t getNextClientId();

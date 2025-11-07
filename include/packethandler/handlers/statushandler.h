@@ -5,7 +5,7 @@
 class StatusHandler : public PacketHandler
 {
 public:
-	StatusHandler(Server& server);
+	StatusHandler(Server& server, Application& application);
 
 	virtual void registerHandlerFunctions() override;
 private:

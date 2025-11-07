@@ -6,7 +6,7 @@ class LoginHandler : public PacketHandler
 {
 public:
 
-	LoginHandler(Server& server);
+	LoginHandler(Server& server, Application& application);
 
 	virtual void registerHandlerFunctions() override;
 private:
