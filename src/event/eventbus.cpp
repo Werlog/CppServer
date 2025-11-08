@@ -1,8 +1,26 @@
 #include "event/eventbus.h"
+#include "application.h"
 
 EventBus::EventBus()
 {
 
+}
+
+void EventBus::dispatchEvents(Application& application)
+{
+	while (!eventQueue.empty())
+	{
+		std::shared_ptr<Event> event = eventQueue.pop_front();
+
+		auto it = eventHandlers.find(event->getEventType());
+		if (it == eventHandlers.end())
+			continue;
+
+		for (auto& handler : it->second)
+		{
+			handler->handle(event, application);
+		}
+	}
 }
 
 void EventBus::registerHandler(EventType eventType, std::unique_ptr<EventHandler> handler)
@@ -19,14 +37,7 @@ void EventBus::registerHandler(EventType eventType, std::unique_ptr<EventHandler
 	it->second.push_back(std::move(handler));
 }
 
-void EventBus::handleEvent(const Event& event)
+void EventBus::submitEvent(std::shared_ptr<Event> event)
 {
-	auto it = eventHandlers.find(event.getEventType());
-	if (it == eventHandlers.end())
-		return;
-
-	for (auto&& handler : it->second)
-	{
-		handler->handle(event);
-	}
+	eventQueue.push_back(event);
 }

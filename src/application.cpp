@@ -2,6 +2,7 @@
 #include <thread>
 #include <chrono>
 #include "command/commandHandlers/joincommandhandler.h"
+#include "event/eventHandlers/joinedeventhandler.h"
 
 Application::Application()
 	: server(25565, *this)
@@ -18,8 +19,9 @@ void Application::run()
 	while (true)
 	{
 		server.update();
+		eventBus.dispatchEvents(*this);
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(20));
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
 }
 
@@ -33,9 +35,14 @@ CommandResult Application::submitCommand(const Command& command)
 	return commandBus.execute(command, *this);
 }
 
-void Application::submitEvent(const Event& event)
+void Application::submitEvent(std::shared_ptr<Event> event)
 {
-	eventBus.handleEvent(event);
+	eventBus.submitEvent(std::move(event));
+}
+
+Server& Application::getServer()
+{
+	return server;
 }
 
 uint32_t Application::getMaxPlayers() const
@@ -50,5 +57,5 @@ void Application::initCommandBus()
 
 void Application::initEventBus()
 {
-
+	eventBus.registerHandler(EventType::PLAYER_JOINED_EVENT, std::move(std::make_unique<JoinedEventHandler>()));
 }

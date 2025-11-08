@@ -17,6 +17,8 @@ public:
 	void writeString(const std::string& value);
 	void writeUShort(uint16_t value);
 	void writeLong(int64_t value);
+	void writeFloat(float value);
+	void writeDouble(double value);
 
 	char readByte();
 	int32_t readInt();
@@ -24,6 +26,8 @@ public:
 	std::string readString();
 	uint16_t readUShort();
 	int64_t readLong();
+	float readFloat();
+	double readDouble();
 
 	uint32_t getPacketLength() const;
 	uint32_t getPacketId() const;

@@ -5,7 +5,7 @@ namespace endian
 	template<typename T>
 	T swapEndianness(T value)
 	{
-		static_assert(std::is_integral<T>::value, "swapEndianness only supports integral types");
+		static_assert(std::is_arithmetic<T>::value, "swapEndianness only supports arithmetic types");
 
 		char bytes[sizeof(T)];
 		std::memcpy(bytes, reinterpret_cast<char*>(&value), sizeof(T));
@@ -18,7 +18,7 @@ namespace endian
 	template<typename T>
 	T nativeToBigEndian(T value)
 	{
-		static_assert(std::is_integral<T>::value, "nativeToBigEndian only supports integral types");
+		static_assert(std::is_arithmetic<T>::value, "nativeToBigEndian only supports arithmetic types");
 
 		if (isMachineLittleEndian())
 			return swapEndianness(value);
@@ -29,7 +29,7 @@ namespace endian
 	template<typename T>
 	T bigEndianToNative(T value)
 	{
-		static_assert(std::is_integral<T>::value, "bigEndianToNative only supports integral types");
+		static_assert(std::is_arithmetic<T>::value, "bigEndianToNative only supports arithmetic types");
 
 		if (isMachineLittleEndian())
 			return swapEndianness(value);

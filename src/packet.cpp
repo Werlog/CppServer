@@ -63,6 +63,20 @@ void Packet::writeLong(int64_t value)
 	writeData(reinterpret_cast<char*>(&value), sizeof(int64_t));
 }
 
+void Packet::writeFloat(float value)
+{
+	value = endian::nativeToBigEndian(value);
+
+	writeData(reinterpret_cast<char*>(&value), sizeof(float));
+}
+
+void Packet::writeDouble(double value)
+{
+	value = endian::nativeToBigEndian(value);
+
+	writeData(reinterpret_cast<char*>(&value), sizeof(double));
+}
+
 char Packet::readByte()
 {
 	char value = 0;
@@ -120,6 +134,26 @@ int64_t Packet::readLong()
 
 	readData(reinterpret_cast<char*>(&value), sizeof(int64_t));
 
+	value = endian::bigEndianToNative(value);
+
+	return value;
+}
+
+float Packet::readFloat()
+{
+	float value;
+
+	readData(reinterpret_cast<char*>(&value), sizeof(float));
+	value = endian::bigEndianToNative(value);
+
+	return value;
+}
+
+double Packet::readDouble()
+{
+	double value;
+
+	readData(reinterpret_cast<char*>(&value), sizeof(double));
 	value = endian::bigEndianToNative(value);
 
 	return value;

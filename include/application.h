@@ -15,8 +15,9 @@ public:
 	std::unordered_map<uint32_t, std::shared_ptr<Player>>& getPlayers();
 
 	CommandResult submitCommand(const Command& command);
-	void submitEvent(const Event& event);
+	void submitEvent(std::shared_ptr<Event> event);
 
+	Server& getServer();
 	uint32_t getMaxPlayers() const;
 private:
 	uint32_t maxPlayers;

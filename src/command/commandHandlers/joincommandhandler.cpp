@@ -1,5 +1,6 @@
 #include "command/commandHandlers/joincommandhandler.h"
 #include "command/commands/joincommand.h"
+#include "event/events/playerjoinedevent.h"
 
 #include "application.h"
 #include "logger.h"
@@ -18,6 +19,8 @@ CommandResult JoinCommandHandler::handle(const Command& command, Application& ap
 	application.getPlayers().insert({ player->getPlayerId(), player });
 
 	logger::logInfo("Player " + player->getPlayerName() + " joined the game");
+
+	application.submitEvent(std::make_shared<PlayerJoinedEvent>(player));
 
 	return CommandResult::ok();
 }
