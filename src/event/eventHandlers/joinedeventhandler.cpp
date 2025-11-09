@@ -39,4 +39,6 @@ void JoinedEventHandler::handle(std::shared_ptr<const Event> event, Application&
 	positionAndLook->writeVarInt(2);
 
 	client->sendPacket(std::move(positionAndLook));
+
+	application.broadcastMessage(joinedEvent->joinedPlayer->getPlayerName() + " joined the game");
 }

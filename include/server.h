@@ -26,6 +26,9 @@ public:
 
 	void disconnectClient(uint32_t clientId);
 
+	void send(std::unique_ptr<Packet> packet, uint32_t clientId);
+	void sendToAllPlaying(std::unique_ptr<Packet> packet, uint32_t exceptClientId = -1);
+
 	std::shared_ptr<Client> getClientById(uint32_t clientId);
 private:
 	Application& application;

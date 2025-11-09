@@ -12,5 +12,7 @@ void DisconnectedEventHandler::handle(std::shared_ptr<const Event> event, Applic
 	{
 		application.removePlayer(player->getPlayerId());
 		logger::logInfo("Player " + player->getPlayerName() + " left the game");
+
+		application.broadcastMessage(player->getPlayerName() + " left the game");
 	}
 }

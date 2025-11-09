@@ -86,6 +86,31 @@ void Server::disconnectClient(uint32_t clientId)
 	it->second->disconnect();
 }
 
+void Server::send(std::unique_ptr<Packet> packet, uint32_t clientId)
+{
+	std::shared_ptr<Client> client = getClientById(clientId);
+	if (client == nullptr)
+		return;
+
+	client->sendPacket(std::move(packet));
+}
+
+void Server::sendToAllPlaying(std::unique_ptr<Packet> packet, uint32_t exceptClientId)
+{
+	for (auto& it : clients)
+	{
+		std::shared_ptr<Client> client = it.second;
+
+		if (client->getConnectionState() != ConnectionState::PLAY || client->getClientId() == exceptClientId)
+		{
+			continue;
+		}
+
+		std::unique_ptr<Packet> clonePacket = std::make_unique<Packet>(*packet);
+		client->sendPacket(std::move(clonePacket));
+	}
+}
+
 std::shared_ptr<Client> Server::getClientById(uint32_t clientId)
 {
 	auto it = clients.find(clientId);

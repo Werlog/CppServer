@@ -4,6 +4,8 @@
 #include "command/commandHandlers/joincommandhandler.h"
 #include "event/eventHandlers/joinedeventhandler.h"
 #include "event/eventHandlers/disconnectedhandler.h"
+#include "event/eventHandlers/chateventhandler.h"
+#include "event/events/chatevent.h"
 
 Application::Application()
 	: server(25565, *this)
@@ -39,6 +41,11 @@ CommandResult Application::submitCommand(const Command& command)
 void Application::submitEvent(std::shared_ptr<Event> event)
 {
 	eventBus.submitEvent(std::move(event));
+}
+
+void Application::broadcastMessage(const std::string& message)
+{
+	eventBus.submitEvent(std::make_shared<ChatEvent>(message, 0, true));
 }
 
 void Application::removePlayer(uint32_t playerId)
@@ -78,4 +85,5 @@ void Application::initEventBus()
 {
 	eventBus.registerHandler(EventType::PLAYER_JOINED_EVENT, std::move(std::make_unique<JoinedEventHandler>()));
 	eventBus.registerHandler(EventType::CLIENT_DISCONNECTED_EVENT, std::move(std::make_unique<DisconnectedEventHandler>()));
+	eventBus.registerHandler(EventType::CHAT_EVENT, std::move(std::make_unique<ChatEventHandler>()));
 }

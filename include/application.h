@@ -17,6 +17,8 @@ public:
 	CommandResult submitCommand(const Command& command);
 	void submitEvent(std::shared_ptr<Event> event);
 
+	void broadcastMessage(const std::string& message);
+
 	void removePlayer(uint32_t playerId);
 	std::shared_ptr<Player> getPlayerById(uint32_t playerId);
 
