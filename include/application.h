@@ -17,6 +17,9 @@ public:
 	CommandResult submitCommand(const Command& command);
 	void submitEvent(std::shared_ptr<Event> event);
 
+	void removePlayer(uint32_t playerId);
+	std::shared_ptr<Player> getPlayerById(uint32_t playerId);
+
 	Server& getServer();
 	uint32_t getMaxPlayers() const;
 private:

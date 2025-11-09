@@ -28,6 +28,8 @@ public:
 
 	std::shared_ptr<Client> getClientById(uint32_t clientId);
 private:
+	Application& application;
+
 	std::unordered_map<uint32_t, std::shared_ptr<Client>> clients;
 	std::unordered_map<ConnectionState, std::unique_ptr<PacketHandler>> packetHandlers;
 	tsqueue<Message> inMessageQueue;
@@ -37,7 +39,7 @@ private:
 	std::thread contextThread;
 	asio::ip::tcp::acceptor acceptor;
 
-	void registerPacketHandlers(Application& application);
+	void registerPacketHandlers();
 
 	void beginAcceptClient();
 	uint32_t getNextClientId();
