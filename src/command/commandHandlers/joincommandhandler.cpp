@@ -14,7 +14,7 @@ CommandResult JoinCommandHandler::handle(const Command& command, Application& ap
 		return CommandResult::failure("Server is full!");
 	}
 
-	std::shared_ptr<Player> player = std::make_shared<Player>(joinCommand.getFromClientId(), joinCommand.getName());
+	std::shared_ptr<Player> player = std::make_shared<Player>(joinCommand.clientId, joinCommand.playerName);
 
 	application.getPlayers().insert({ player->getPlayerId(), player });
 

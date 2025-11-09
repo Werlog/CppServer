@@ -3,13 +3,14 @@
 #include "../command.h"
 #include <string>
 
-class JoinCommand : public Command
+struct JoinCommand : public Command
 {
 public:
-
-	JoinCommand(uint32_t fromClientId, const std::string& playerName);
-
-	const std::string& getName() const;
-private:
 	std::string playerName;
+
+	JoinCommand(uint32_t fromClientId, const std::string& playerName)
+		: Command(CommandType::JOIN_COMMAND, fromClientId)
+	{
+		this->playerName = playerName;
+	}
 };

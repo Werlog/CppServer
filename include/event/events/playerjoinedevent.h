@@ -4,13 +4,13 @@
 #include <memory>
 #include "../../player.h"
 
-class PlayerJoinedEvent : public Event
+struct PlayerJoinedEvent : public Event
 {
-public:
+	std::shared_ptr<const Player> joinedPlayer;
 
-	PlayerJoinedEvent(std::shared_ptr<Player> player);
-
-	const std::shared_ptr<Player> getPlayer() const;
-private:
-	std::shared_ptr<Player> joinedPlayer;
+	PlayerJoinedEvent(std::shared_ptr<const Player> player)
+		: Event(EventType::PLAYER_JOINED_EVENT)
+	{
+		this->joinedPlayer = player;
+	}
 };

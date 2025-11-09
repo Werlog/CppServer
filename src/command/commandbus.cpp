@@ -16,7 +16,7 @@ void CommandBus::registerHandler(CommandType commandType, std::unique_ptr<Comman
 
 CommandResult CommandBus::execute(const Command& command, Application& application)
 {
-	auto it = handlers.find(command.getCommandType());
+	auto it = handlers.find(command.type);
 
 	if (it == handlers.end())
 		return CommandResult::failure("No command handler found");

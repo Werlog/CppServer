@@ -12,7 +12,7 @@ void EventBus::dispatchEvents(Application& application)
 	{
 		std::shared_ptr<Event> event = eventQueue.pop_front();
 
-		auto it = eventHandlers.find(event->getEventType());
+		auto it = eventHandlers.find(event->type);
 		if (it == eventHandlers.end())
 			continue;
 

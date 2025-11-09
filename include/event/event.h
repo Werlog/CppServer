@@ -5,13 +5,14 @@ enum EventType : unsigned char
 	PLAYER_JOINED_EVENT,
 };
 
-class Event
+struct Event
 {
-public:
-	Event(EventType eventType);
-	virtual ~Event() = default;
-
-	EventType getEventType() const;
-private:
 	EventType type;
+
+	Event(EventType eventType)
+	{
+		this->type = eventType;
+	}
+
+	virtual ~Event() = default;
 };

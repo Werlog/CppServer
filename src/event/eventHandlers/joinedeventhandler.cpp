@@ -7,13 +7,13 @@ void JoinedEventHandler::handle(std::shared_ptr<const Event> event, Application&
 {
 	auto joinedEvent = std::dynamic_pointer_cast<const PlayerJoinedEvent>(event);
 
-	std::shared_ptr<Client> client = application.getServer().getClientById(joinedEvent->getPlayer()->getPlayerId());
+	std::shared_ptr<Client> client = application.getServer().getClientById(joinedEvent->joinedPlayer->getPlayerId());
 	if (client == nullptr)
 		return;
 
 	std::unique_ptr<Packet> packet = std::make_unique<Packet>(0x02);
 	packet->writeString("5c063efe-7550-4d35-968d-e93b5a7fb008");
-	packet->writeString(joinedEvent->getPlayer()->getPlayerName());
+	packet->writeString(joinedEvent->joinedPlayer->getPlayerName());
 	
 	client->sendPacket(std::move(packet));
 	client->setConnectionState(ConnectionState::PLAY);
@@ -21,7 +21,7 @@ void JoinedEventHandler::handle(std::shared_ptr<const Event> event, Application&
 	std::unique_ptr<Packet> joinedGame = std::make_unique<Packet>(0x23);
 	joinedGame->writeInt(1);
 	joinedGame->writeByte(0);
-	joinedGame->writeInt(0);
+	joinedGame->writeInt(1);
 	joinedGame->writeByte(1);
 	joinedGame->writeByte(40);
 	joinedGame->writeString("default");

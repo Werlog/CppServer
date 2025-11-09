@@ -7,14 +7,16 @@ enum CommandType : unsigned char
 	JOIN_COMMAND,
 };
 
-class Command
+struct Command
 {
-public:
-	Command(CommandType type, uint32_t fromClientId);
+	Command(CommandType type, uint32_t clientId)
+	{
+		this->type = type;
+		this->clientId = clientId;
+	}
 
-	CommandType getCommandType() const;
-	uint32_t getFromClientId() const;
-private:
+	virtual ~Command() = default;
+
 	CommandType type;
-	uint32_t fromClientId;
+	uint32_t clientId;
 };
