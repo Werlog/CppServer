@@ -10,6 +10,7 @@ namespace logger
 		LOG_WARNING,
 		LOG_DEBUG,
 		LOG_ERROR,
+		LOG_CHAT,
 	};
 
 	void log(const std::string& text, LogMessageType messageType);
@@ -19,6 +20,8 @@ namespace logger
 	void logError(const std::string& text);
 
 	void logWarning(const std::string& text);
+
+	void logChat(const std::string& text);
 
 	std::string getLogTypeString(LogMessageType messageType);
 }

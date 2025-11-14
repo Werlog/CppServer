@@ -2,6 +2,7 @@
 #include "event/events/chatevent.h"
 #include "packet.h"
 #include "application.h"
+#include "logger.h"
 
 void ChatEventHandler::handle(std::shared_ptr<const Event> event, Application& application)
 {
@@ -14,6 +15,7 @@ void ChatEventHandler::handle(std::shared_ptr<const Event> event, Application& a
 	if (chatEvent->broadcast)
 	{
 		application.getServer().sendToAllPlaying(std::move(packet));
+		logger::logChat(chatEvent->message);
 	}
 	else
 	{

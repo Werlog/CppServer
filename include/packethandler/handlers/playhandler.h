@@ -10,4 +10,5 @@ public:
 	virtual void registerHandlerFunctions() override;
 private:
 	void handleKeepAlive(Message message);
+	void handleChatMessage(Message message);
 };
