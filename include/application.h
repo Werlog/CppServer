@@ -4,6 +4,7 @@
 #include "command/commandbus.h"
 #include "event/eventbus.h"
 #include "player.h"
+#include "keepalivetimer.h"
 
 class Application
 {
@@ -27,6 +28,7 @@ public:
 private:
 	uint32_t maxPlayers;
 	std::unordered_map<uint32_t, std::shared_ptr<Player>> players;
+	KeepAliveTimer keepAliveTimer;
 	CommandBus commandBus;
 	EventBus eventBus;
 	Server server;

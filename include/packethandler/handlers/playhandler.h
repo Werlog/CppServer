@@ -8,4 +8,6 @@ public:
 	PlayHandler(Server& server, Application& application);
 
 	virtual void registerHandlerFunctions() override;
+private:
+	void handleKeepAlive(Message message);
 };

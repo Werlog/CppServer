@@ -8,7 +8,7 @@
 #include "event/events/chatevent.h"
 
 Application::Application()
-	: server(25565, *this)
+	: server(25565, *this), keepAliveTimer(server)
 {
 	this->maxPlayers = 20;
 	server.startServer();
@@ -23,6 +23,8 @@ void Application::run()
 	{
 		server.update();
 		eventBus.dispatchEvents(*this);
+		keepAliveTimer.update();
+
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
