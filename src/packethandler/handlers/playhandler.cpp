@@ -4,7 +4,7 @@
 PlayHandler::PlayHandler(Server& server, Application& application)
 	: PacketHandler(server, application)
 {
-
+	registerHandlerFunctions();
 }
 
 void PlayHandler::registerHandlerFunctions()
