@@ -8,6 +8,7 @@ project(MinecraftServer)
 
 add_subdirectory(thirdparty/asio)
 add_subdirectory(thirdparty/glm)
+add_subdirectory(thirdparty/uuid_v4)
 
 file(GLOB_RECURSE SERVER_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
@@ -23,4 +24,4 @@ target_sources("${CMAKE_PROJECT_NAME}" PRIVATE ${SERVER_SOURCES})
 
 target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
-target_link_libraries("${CMAKE_PROJECT_NAME}" PRIVATE asio glm)
+target_link_libraries("${CMAKE_PROJECT_NAME}" PRIVATE asio glm uuid_v4)
